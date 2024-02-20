@@ -2,9 +2,18 @@ import { compare, hash } from "../config/bcrypt.js";
 import { generateToken } from "../config/generateToken.js";
 import User from "../models/userSchema.js";
 
-const getAllUser = async () => {
-  const users = await User.find();
-  return users;
+const getUser = async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+  console.log(req.user._id);
+  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.send(users);
 };
 
 const signUpUser = async (req, res) => {
@@ -57,4 +66,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { getAllUser, signUpUser, loginUser };
+export { getUser, signUpUser, loginUser };

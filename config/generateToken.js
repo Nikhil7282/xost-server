@@ -7,4 +7,8 @@ const generateToken = (id) => {
   return token;
 };
 
-export { generateToken };
+const decodeToken = (token) => {
+  return jwt.verify(token, process.env.JWT_SECRET);
+};
+
+export { generateToken, decodeToken };
