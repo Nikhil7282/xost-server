@@ -1,13 +1,14 @@
 import { Router } from "express";
 import {
-  getAllUser,
+  getUser,
   loginUser,
   signUpUser,
 } from "../controllers/userController.js";
+import { verify } from "../middleware/authMiddleware.js";
 
 const userRouter = Router();
 
-userRouter.get("/", getAllUser);
+userRouter.get("/", verify, getUser);
 userRouter.post("/signup", signUpUser);
 userRouter.post("/login", loginUser);
 
