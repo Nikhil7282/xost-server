@@ -50,7 +50,10 @@ const accessChat = async (req, res) => {
 
 const fetchChats = async (req, res) => {
   let chats = await Chats.find({
-    users: { $elemMatch: { $eq: req.user._id } },
+    $or: [
+      { users: { $elemMatch: { $eq: req.user._id } } },
+      { groupAdmin: { $eq: req.user._id } },
+    ],
   })
     .populate("users", "-password")
     .populate("latestMessage")
@@ -64,4 +67,132 @@ const fetchChats = async (req, res) => {
   return res.send(chats);
 };
 
-export { accessChat, fetchChats };
+const createGroupChat = async (req, res, next) => {
+  if (!req.body.users || !req.body.groupName) {
+    return res.status(400).json({ message: "Please fill all the fields" });
+  }
+  const users = JSON.parse(req.body.users);
+  // console.log(users);
+  if (users.length < 2) {
+    return res
+      .status(400)
+      .json({ message: "atleast two users or more users is Required" });
+  }
+  try {
+    const newGroup = await Chats.create({
+      chatName: req.body.groupName,
+      users: users,
+      isGroupChat: true,
+      groupAdmin: req.user,
+    });
+    const group = await Chats.findOne({ _id: newGroup._id })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+    return res.status(200).json({ message: "Group Created", group });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+const renameGroup = async (req, res) => {
+  const { chatId, chatName } = req.body;
+  if (!chatId || !chatName) {
+    return res.status(400).json({ message: "Please fill all the fields" });
+  }
+  try {
+    const group = await Chats.findByIdAndUpdate(
+      chatId,
+      {
+        chatName,
+      },
+      { new: true }
+    )
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+    if (!group) {
+      return res.status(404).json({ message: "Group Not Found" });
+    }
+    return res.status(200).json({ message: "Group Renamed" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+const addToGroup = async (req, res, next) => {
+  const { userId, chatId } = req.body;
+  if (!userId || !chatId) {
+    return res.status(400).json({ message: "Please fill all the fields" });
+  }
+  try {
+    let chat = await Chats.findOne({ _id: chatId });
+    let findUser = chat.users.indexOf(userId);
+
+    if (!chat.isGroupChat) {
+      return res
+        .status(404)
+        .json({ message: "Cannot Add Members to One on One Chat" });
+    } else if (findUser != -1) {
+      return res.status(400).json({ message: "User Already in Group" });
+    } else {
+      chat.users.push(userId);
+      await chat.save();
+      chat = await Chats.populate(chat, {
+        path: "users",
+        select: "_id name email pic",
+      });
+      chat = await Chats.populate(chat, {
+        path: "groupAdmin",
+        select: "_id name email pic",
+      });
+      res.status(200).json({ message: "Successfully Added", chat });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error", error: error });
+  }
+};
+
+const removeFromGroup = async (req, res, next) => {
+  const { userId, chatId } = req.body;
+  if (!userId || !chatId) {
+    return res.status(400).json({ message: "Please fill all the fields" });
+  }
+  try {
+    let chat = await Chats.findOne({ _id: chatId });
+    let findUser = chat.users.indexOf(userId);
+
+    if (!chat.isGroupChat) {
+      return res
+        .status(404)
+        .json({ message: "Cannot Remove Member from One on One Chat" });
+    } else if (findUser == -1) {
+      return res.status(400).json({ message: "User Not Found" });
+    } else {
+      chat.users.splice(findUser, 1);
+      await chat.save();
+      chat = await Chats.populate(chat, {
+        path: "users",
+        select: "_id name email pic",
+      });
+      chat = await Chats.populate(chat, {
+        path: "groupAdmin",
+        select: "_id name email pic",
+      });
+      res.status(200).json({ message: "Successfully Removed", chat });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error", error: error });
+  }
+};
+
+export {
+  accessChat,
+  fetchChats,
+  createGroupChat,
+  renameGroup,
+  addToGroup,
+  removeFromGroup,
+};
