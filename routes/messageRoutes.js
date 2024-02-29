@@ -1,8 +1,15 @@
 import { Router } from "express";
-import { addMessage } from "../controllers/messageController.js";
-
+import {
+  addMessage,
+  allMessages,
+  sendMessage,
+} from "../controllers/messageController.js";
+import { verify } from "../middleware/authMiddleware.js";
 const messageRouter = Router();
 
-messageRouter.post("/addMessage", addMessage);
+messageRouter.post("/", verify, sendMessage);
+messageRouter.get("/:chatId", verify, allMessages);
+
+// messageRouter.post("/addMessage", addMessage);
 
 export default messageRouter;

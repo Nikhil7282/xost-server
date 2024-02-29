@@ -3,6 +3,7 @@ import User from "../models/userSchema.js";
 
 const accessChat = async (req, res) => {
   const { userId } = req.body;
+  // console.log(userId);
   let chat;
   if (!userId) {
     return res.status(400).json({ message: "userId is required" });
@@ -68,6 +69,7 @@ const fetchChats = async (req, res) => {
 };
 
 const createGroupChat = async (req, res, next) => {
+  // console.log(req.body);
   if (!req.body.users || !req.body.groupName) {
     return res.status(400).json({ message: "Please fill all the fields" });
   }
@@ -88,7 +90,8 @@ const createGroupChat = async (req, res, next) => {
     const group = await Chats.findOne({ _id: newGroup._id })
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
-    return res.status(200).json({ message: "Group Created", group });
+    console.log("created");
+    return res.status(200).json({ message: "Group Created", data: group });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server Error", error });

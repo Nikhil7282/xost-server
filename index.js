@@ -17,7 +17,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 app.use("/api/user", userRouter);
 app.use("/api/chats", chatRouter);
-app.use("/api/message", messageRouter);
+app.use("/api/messages", messageRouter);
 app.use(notFound);
 app.use(errorHandler);
 
