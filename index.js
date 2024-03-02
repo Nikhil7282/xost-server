@@ -1,7 +1,5 @@
 import { config } from "dotenv";
 config();
-import { Server } from "socket.io";
-import http from "http";
 import cors from "cors";
 import express from "express";
 import connectDb from "./config/db.js";
@@ -10,6 +8,7 @@ import colors from "colors";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import chatRouter from "./routes/chatRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
+import { socketInstance } from "./socket.js";
 
 const { yellow } = colors;
 const app = express();
@@ -27,22 +26,4 @@ const expressServer = app.listen({ port: process.env.PORT }, () => {
   console.log(`Running on port ${process.env.PORT}`.yellow.bold);
 });
 
-const io = new Server(expressServer, {
-  pingTimeout: 60000,
-  cors: {
-    origin: "http://localhost:5173",
-  },
-});
-io.on("connection", (socket) => {
-  console.log(`Connected to socket`);
-  socket.on("setup", (userData) => {
-    // console.log(userData);
-    socket.join(userData.id);
-    socket.emit("connected");
-  });
-
-  socket.on("join-room", (roomId) => {
-    socket.join(roomId);
-    console.log(`Joined room ${roomId}}`.blue.bold);
-  });
-});
+socketInstance(expressServer);
