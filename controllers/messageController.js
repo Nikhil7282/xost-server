@@ -1,3 +1,4 @@
+import path from "path";
 import Message from "../models/messageSchema.js";
 
 const addMessage = async (req, res) => {
@@ -24,6 +25,9 @@ const sendMessage = async (req, res) => {
   };
   try {
     let message = await Message.create(newMessage);
+    message = await Message.populate(message, {
+      path: "chatId",
+    });
     console.log(message);
     res.status(200).json({ message: "Message Sent", data: message });
   } catch (error) {
