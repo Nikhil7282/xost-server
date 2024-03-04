@@ -4,6 +4,7 @@ import {
   accessChat,
   addToGroup,
   createGroupChat,
+  deleteChat,
   fetchChats,
   removeFromGroup,
   renameGroup,
@@ -17,5 +18,6 @@ chatRouter.post("/createGroup", verify, createGroupChat);
 chatRouter.put("/renameGroup", verify, renameGroup);
 chatRouter.put("/addToGroup", verify, addToGroup);
 chatRouter.put("/removeFromGroup", verify, removeFromGroup);
+chatRouter.delete("/deleteChat/:chatId", verify, deleteChat);
 
 export default chatRouter;

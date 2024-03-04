@@ -10,14 +10,16 @@ export const socketInstance = (expressServer) => {
 
   io.on("connection", (socket) => {
     console.log(`Socket Connected`);
-
     socket.on("join-room", (roomId) => {
       socket.join(roomId);
       console.log(`Joined room ${roomId}}`.blue.bold);
     });
     socket.on("send-message", (message) => {
-      console.log(message);
-      let chatUsers = [...message.chatId.users, message.chatId.groupAdmin];
+      // console.log(message);
+      let chatUsers = [...message.chatId.users];
+      if (message.chatId.groupAdmin) {
+        chatUsers = [...chatUsers, message.chatId.groupAdmin];
+      }
       chatUsers.forEach((user) => {
         if (user !== message.sender) {
           socket.to(message.chatId._id).emit("receive-message", message);
@@ -25,10 +27,16 @@ export const socketInstance = (expressServer) => {
       });
     });
     socket.on("typing", (user) => {
-      socket.to().emit("typingEvent", user);
+      console.log("Started Typing");
+      console.log(user);
+      socket.broadcast.to(user).emit("typing");
     });
     socket.on("stopTyping", (user) => {
-      socket.to().emit("stopTypingEvent", user);
+      console.log("Stopped typing");
+      socket.broadcast.to(user).emit("stopTyping");
+    });
+    socket.off("join-room", () => {
+      console.log("Socket Disconnected");
     });
   });
 };
