@@ -1,5 +1,6 @@
 import Chats from "../models/chatSchema.js";
 import User from "../models/userSchema.js";
+import Message from "../models/messageSchema.js";
 
 const accessChat = async (req, res) => {
   const { userId } = req.body;
@@ -191,6 +192,25 @@ const removeFromGroup = async (req, res, next) => {
   }
 };
 
+const deleteChat = async (req, res) => {
+  const chatId = req.params.chatId;
+  if (!chatId) {
+    return res.status(400).json({ message: "ChatId Not Found" });
+  }
+  try {
+    const deletingChat = await Chats.findOne({ _id: chatId });
+    if (!deletingChat) {
+      return res.status(404).json({ message: "Chat Not Found" });
+    }
+    const Messages = await Message.deleteMany({ chatId: chatId });
+    const deleteChat = await Chats.deleteOne({ _id: chatId });
+    console.log(deleteChat);
+    return res.status(200).json({ message: "Chat Deleted" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
 export {
   accessChat,
   fetchChats,
@@ -198,4 +218,5 @@ export {
   renameGroup,
   addToGroup,
   removeFromGroup,
+  deleteChat,
 };
