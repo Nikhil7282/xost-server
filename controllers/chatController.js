@@ -199,6 +199,14 @@ const deleteChat = async (req, res) => {
   }
   try {
     const deletingChat = await Chats.findOne({ _id: chatId });
+    if (!deleteChat.isGroupChat) {
+      return res.status(404).json({ message: "Not a group chat" });
+    }
+    if (req.user._id !== deleteChat.groupAdmin) {
+      return res
+        .status(400)
+        .json({ message: "Only Admin Can Delete Group Chat" });
+    }
     if (!deletingChat) {
       return res.status(404).json({ message: "Chat Not Found" });
     }
@@ -211,6 +219,7 @@ const deleteChat = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
 export {
   accessChat,
   fetchChats,

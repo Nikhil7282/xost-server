@@ -35,7 +35,8 @@ export const socketInstance = (expressServer) => {
       console.log("Stopped typing");
       socket.broadcast.to(user).emit("stopTyping");
     });
-    socket.off("join-room", () => {
+
+    socket.on("disconnect", () => {
       console.log("Socket Disconnected");
     });
   });

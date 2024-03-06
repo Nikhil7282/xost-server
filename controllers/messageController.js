@@ -28,6 +28,7 @@ const sendMessage = async (req, res) => {
     message = await Message.populate(message, {
       path: "chatId",
     });
+    message = await Message.populate(message, { path: "sender" });
     console.log(message);
     res.status(200).json({ message: "Message Sent", data: message });
   } catch (error) {
@@ -38,7 +39,11 @@ const sendMessage = async (req, res) => {
 
 const allMessages = async (req, res) => {
   try {
-    const messages = await Message.find({ chatId: req.params.chatId });
+    let messages = await Message.find({ chatId: req.params.chatId });
+    messages = await Message.populate(messages, {
+      path: "chatId",
+    });
+    messages = await Message.populate(messages, { path: "sender" });
     return res.status(200).json({ message: "All Messages", data: messages });
   } catch (error) {
     console.log(error);
