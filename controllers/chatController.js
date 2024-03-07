@@ -166,7 +166,6 @@ const removeFromGroup = async (req, res, next) => {
   try {
     let chat = await Chats.findOne({ _id: chatId });
     let findUser = chat.users.indexOf(userId);
-
     if (!chat.isGroupChat) {
       return res
         .status(404)
