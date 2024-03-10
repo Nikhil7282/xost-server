@@ -28,7 +28,7 @@ const accessChat = async (req, res) => {
     // });
 
     if (chat.length > 0) {
-      return res.status(200).json({ message: "Chat Fetched", chat });
+      return res.status(200).json({ message: "Chat Fetched", chat: chat[0] });
     } else {
       let newChat = await Chats.create({
         isGroupChat: false,
@@ -36,7 +36,7 @@ const accessChat = async (req, res) => {
         latestMessage: null,
         groupAdmin: null,
       });
-      let LatestChat = Chats.findOne({ _id: newChat._id }).populate(
+      let LatestChat = await Chats.findOne({ _id: newChat._id }).populate(
         "users",
         "-password"
       );
@@ -198,7 +198,7 @@ const deleteChat = async (req, res) => {
   }
   try {
     const deletingChat = await Chats.findOne({ _id: chatId });
-    if (!deleteChat.isGroupChat) {
+    if (!deletingChat.isGroupChat) {
       return res.status(404).json({ message: "Not a group chat" });
     }
     if (req.user._id !== deleteChat.groupAdmin) {
