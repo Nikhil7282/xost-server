@@ -1,6 +1,7 @@
 import Chats from "../models/chatSchema.js";
 import User from "../models/userSchema.js";
 import Message from "../models/messageSchema.js";
+import { json } from "stream/consumers";
 
 const accessChat = async (req, res) => {
   const { userId } = req.body;
@@ -201,7 +202,9 @@ const deleteChat = async (req, res) => {
     if (!deletingChat.isGroupChat) {
       return res.status(404).json({ message: "Not a group chat" });
     }
-    if (req.user._id !== deleteChat.groupAdmin) {
+    if (
+      JSON.stringify(req.user._id) !== JSON.stringify(deletingChat.groupAdmin)
+    ) {
       return res
         .status(400)
         .json({ message: "Only Admin Can Delete Group Chat" });
@@ -211,7 +214,7 @@ const deleteChat = async (req, res) => {
     }
     const Messages = await Message.deleteMany({ chatId: chatId });
     const deleteChat = await Chats.deleteOne({ _id: chatId });
-    console.log(deleteChat);
+    console.log("Chat Deleted");
     return res.status(200).json({ message: "Chat Deleted" });
   } catch (error) {
     console.log(error);

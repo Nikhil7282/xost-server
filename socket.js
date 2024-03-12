@@ -29,7 +29,7 @@ export const socketInstance = (expressServer) => {
     socket.on("typing", (user) => {
       console.log("Started Typing");
       console.log(user);
-      socket.broadcast.to(user).emit("typing", user);
+      socket.to(user).emit("typing", user);
     });
     socket.on("stopTyping", (user) => {
       console.log("Stopped typing");
