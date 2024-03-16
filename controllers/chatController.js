@@ -1,7 +1,5 @@
 import Chats from "../models/chatSchema.js";
-import User from "../models/userSchema.js";
 import Message from "../models/messageSchema.js";
-import { json } from "stream/consumers";
 
 const accessChat = async (req, res) => {
   const { userId } = req.body;
@@ -76,7 +74,7 @@ const createGroupChat = async (req, res, next) => {
     return res.status(400).json({ message: "Please fill all the fields" });
   }
   const users = JSON.parse(req.body.users);
-  console.log(users);
+  // console.log(users);
   if (users.length < 2) {
     return res
       .status(400)
@@ -92,7 +90,7 @@ const createGroupChat = async (req, res, next) => {
     const group = await Chats.findOne({ _id: newGroup._id })
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
-    console.log("created");
+    // console.log("created");
     return res.status(200).json({ message: "Group Created", data: group });
   } catch (error) {
     console.log(error);
@@ -214,7 +212,7 @@ const deleteChat = async (req, res) => {
     }
     const Messages = await Message.deleteMany({ chatId: chatId });
     const deleteChat = await Chats.deleteOne({ _id: chatId });
-    console.log("Chat Deleted");
+    // console.log("Chat Deleted");
     return res.status(200).json({ message: "Chat Deleted" });
   } catch (error) {
     console.log(error);

@@ -12,7 +12,7 @@ export const socketInstance = (expressServer) => {
     console.log(`Socket Connected`);
     socket.on("join-room", (roomId) => {
       socket.join(roomId);
-      console.log(`Joined room ${roomId}}`.blue.bold);
+      // console.log(`Joined room ${roomId}}`.blue.bold);
     });
     socket.on("send-message", (message) => {
       // console.log(message);
@@ -27,12 +27,9 @@ export const socketInstance = (expressServer) => {
       });
     });
     socket.on("typing", (user) => {
-      console.log("Started Typing");
-      console.log(user);
       socket.to(user).emit("typing", user);
     });
     socket.on("stopTyping", (user) => {
-      console.log("Stopped typing");
       socket.broadcast.to(user).emit("stopTyping");
     });
 

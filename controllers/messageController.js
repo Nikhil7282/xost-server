@@ -7,7 +7,7 @@ const addMessage = async (req, res) => {
     content: "Hi",
     chatId: "65d4bc7c4e1d0eae49aa5e79",
   });
-  console.log(message);
+  // console.log(message);
   res.send(message);
 };
 
@@ -15,7 +15,6 @@ const sendMessage = async (req, res) => {
   const { content, chatId } = req.body;
 
   if (!content || !chatId) {
-    console.log("Invalid");
     return res.status(400).json({ message: "Invalid Data" });
   }
   let newMessage = {
@@ -29,7 +28,6 @@ const sendMessage = async (req, res) => {
       path: "chatId",
     });
     message = await Message.populate(message, { path: "sender" });
-    console.log(message);
     res.status(200).json({ message: "Message Sent", data: message });
   } catch (error) {
     console.log(error);
