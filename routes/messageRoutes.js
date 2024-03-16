@@ -10,6 +10,4 @@ const messageRouter = Router();
 messageRouter.post("/", verify, sendMessage);
 messageRouter.get("/:chatId", verify, allMessages);
 
-// messageRouter.post("/addMessage", addMessage);
-
 export default messageRouter;
