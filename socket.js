@@ -4,7 +4,7 @@ export const socketInstance = (expressServer) => {
   const io = new Server(expressServer, {
     pingTimeout: 60000,
     cors: {
-      origin: "http://localhost:5173",
+      origin: ["http://localhost:5173", "https://x-ost.vercel.app"],
     },
   });
 

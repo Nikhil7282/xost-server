@@ -14,7 +14,12 @@ const { yellow } = colors;
 const app = express();
 app.use(express.json());
 connectDb();
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://x-ost.vercel.app"],
+    credentials: true,
+  })
+);
 
 app.use("/api/user", userRouter);
 app.use("/api/chats", chatRouter);
