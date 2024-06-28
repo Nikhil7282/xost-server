@@ -11,6 +11,7 @@ import messageRouter from "./routes/messageRoutes.js";
 import { socketInstance } from "./socket.js";
 
 const { yellow } = colors;
+
 const app = express();
 app.use(express.json());
 connectDb();

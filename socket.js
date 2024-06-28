@@ -12,7 +12,6 @@ export const socketInstance = (expressServer) => {
     console.log(`Socket Connected`);
     socket.on("join-room", (roomId) => {
       socket.join(roomId);
-      // console.log(`Joined room ${roomId}}`.blue.bold);
     });
     socket.on("send-message", (message) => {
       // console.log(message);
